@@ -15,26 +15,26 @@
 
 /* Typing text styles */
 #typing-text {
+  height: 6rem;
   font-size: 24px;
-  min-height: 3rem;
+  text-align: center;
+}
+
+#typing-text::after {
+  content: "_";
+  animation: blink 0.7s infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
 }
 
 p {
   margin: 0;
 }
 
-.caret {
-  display: inline-block;
-  width: 8px; /* Adjust the caret width as needed */
-  margin-left: 5px; /* Add some space between text and caret */
-  animation: blink-caret 0.5s step-end infinite;
-  color: whitesmoke;
-}
-
-@keyframes blink-caret {
-  50% {
-    opacity: 0;
-}}
 
 *,
 *::before,
