@@ -1,86 +1,69 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<head>
-  <link rel="stylesheet" href="style.css" />
-</head>
-
-<body class="herotopography">
-  <section class="content">
-    <div class="">
-      <div class="typing-container">
-        <p class="text-center">Programming qoutes.</p>
-        <div id="typing-text"></div>
+  <body class="herotopography">
+    <section class="content">
+      <div class="">
+        <div class="typing-container">
+          <p class="text-center">Programming quotes.</p>
+          <div id="typing-text"></div>
+          <p id="author"></p>
+        </div>
       </div>
-    </div>
-  </section>
-  <pre data-dump></pre>
-  <script>
-    const textLines = [
-      "It's not a bug, it's a feature. - Anonymous",
-      "Code is like humor. When you have to explain it, it’s bad. - Cory House",
-      "The best error message is the one that never shows up. - Thomas Fuchs",
-      "Programming can be fun, and so can cryptography. however, they should not be combined. - Kreitzberg and Shneiderman",
-      "If debugging is the process of removing software bugs, then programming must be the process of putting them in. - Edsger Dijkstra",
-      "Coding is like cooking, most of the time, it's just following a recipe. But every now and then, you throw in a jalapeño just to see what happens. - Anonymous",
-      "The best thing about a boolean is even if you are wrong, you are only off by a bit. - Anonymous",
-      "Without requirements or design, programming is the art of adding bugs to an empty text file. - Louis Srygley",
-      "Before software can be reusable it first has to be usable. - Ralph Johnson",
-      "The best performance improvement is the transition from the nonworking state to the working state. - J. Osterhout",
-      "The trouble with programmers is that you can never tell what a programmer is doing until it’s too late. - Seymour Cray",
-      "Don’t worry if it doesn’t work right. If everything did, you’d be out of a job. - Mosher’s Law of Software Engineering",
-      "A good programmer is someone who always looks both ways before crossing a one-way street. - Doug Linder",
-      "Always code as if the guy who ends up maintaining your code will be a violent psychopath who knows where you live. - Rick Osborne",
-      "Any fool can write code that a computer can understand. Good programmers write code that humans can understand. - Martin Fowler",
-      "Computers are good at following instructions, but not at reading your mind. - Donald Knuth",
-      "Any code of your own that you haven’t looked at for six or more months might as well have been written by someone else. - Eagleson’s law",
-      "One man’s crappy software is another man’s full-time job. - Jessica Gaston",
-      "Deleted code is debugged code. - Jeff Sickel",
-      "Walking on water and developing software from a specification are easy if both are frozen. - Edward V Berard",
-      "Software undergoes beta testing shortly before it’s released. Beta is Latin for “still doesn’t work. - Anonymous",
-      "It’s not a bug – it’s an undocumented feature. - Anonymous",
-      "Software and cathedrals are much the same – first we build them, then we pray. - Anonymous",
-      "There are two ways to write error-free programs. only the third one works. - Alan J. Perlis",
-      "It’s hardware that makes a machine fast. It’s software that makes a fast machine slow. - Craig Bruce",
-      "Code without comments is like a book without punctuation. it's hard to understand. - Anonymous",
-    ];
-    const typingElement = document.getElementById("typing-text");
-    let lineIndex = 0;
-    let charIndex = 0;
-    let isDeleting = false;
-    let typingSpeed = 50; // Initial typing speed in milliseconds
+    </section>
+    <pre data-dump class="text-color"></pre>
+    <script>
+      fetch("https://api.bitbreeze.nl/quotes/all")
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          let quotes = shuffleArray(data.data);
+          typeText(quotes);
+        });
 
-    function typeText() {
-      const currentLine = textLines[lineIndex];
-      const text = isDeleting
-        ? currentLine.substring(0, charIndex - 1)
-        : currentLine.substring(0, charIndex + 1);
-
-      typingElement.textContent = text;
-
-      if (!isDeleting && text === currentLine) {
-        isDeleting = true;
-        setTimeout(typeText, 1000); // Wait for a moment before deleting
-      } else if (isDeleting && text === "") {
-        isDeleting = false;
-        lineIndex = (lineIndex + 1) % textLines.length; // Loop through lines
-        setTimeout(typeText, 500); // Wait for a moment before typing the next line
-      } else {
-        setTimeout(typeText, isDeleting ? typingSpeed / 2 : typingSpeed);
-        charIndex += isDeleting ? -1 : 1;
+      // Function to shuffle an array
+      function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          let j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
       }
-    }
 
-    typeText();
+      const typingElement = document.getElementById("typing-text");
+      let lineIndex = 0;
+      let charIndex = 0;
+      let isDeleting = false;
+      let typingSpeed = 50; // Initial typing speed in milliseconds
 
-    const dump = document.querySelector("[data-dump]");
+      function typeText(quotes) {
+        const currentQuote =
+          quotes[lineIndex].text + " - " + quotes[lineIndex].author;
+        const text = isDeleting
+          ? currentQuote.substring(0, charIndex - 1)
+          : currentQuote.substring(0, charIndex + 1);
 
-    fetch("https://dummyjson.com/users").then((response) => {
-      return response.json();
-    }).then((data) => {
-      dump.innerHTML = JSON.stringify(data, null, 2);
-    });
-  </script>
-</body>
+        typingElement.textContent = text;
 
+        if (!isDeleting && text === currentQuote) {
+          isDeleting = true;
+          setTimeout(() => typeText(quotes), 1000); // Wait for a moment before deleting
+        } else if (isDeleting && text === "") {
+          isDeleting = false;
+          lineIndex = (lineIndex + 1) % quotes.length; // Loop through quotes
+          setTimeout(() => typeText(quotes), 500); // Wait for a moment before typing the next quote
+        } else {
+          setTimeout(
+            () => typeText(quotes),
+            isDeleting ? typingSpeed / 2 : typingSpeed
+          );
+          charIndex += isDeleting ? -1 : 1;
+        }
+      }
+    </script>
+  </body>
 </html>
